@@ -14,17 +14,11 @@ SHOPS = [
     {"name": "한국골든테라피", "phone": "0507-1280-3360", "score": "4.7", "tags": "프리미엄 · 집중케어 · 24시운영"}
 ]
 
+# '테라피' 대신 '마사지' 키워드로 통일 (네이버 40자 규격 맞춤)
 TITLE_THEMES = [
     "출장 프라이빗 케어 마사지",
     "출장 균형케어 마사지",
-    "출장 맞춤 테라피"
-]
-
-SUB_TITLES = [
-    "빠른 방문 코스 안내",
-    "일정 맞춤 요금 비교",
-    "선입금 없는 후불 안내",
-    "1:1 프라이빗 예약"
+    "출장 맞춤 마사지"
 ]
 
 OFFICE_KEYWORDS = ["강남", "역삼", "삼성", "선릉", "테헤란", "서초", "여의도", "판교", "가산", "구로", "마곡", "종로", "을지로", "중구", "명동", "성수", "상암"]
@@ -199,17 +193,19 @@ def render_courses():
           <article class="course-card"><span class="course-icon">✨</span><h3>여성전용 케어</h3><p>프라이빗하고 세심한 배려로 편안하게 진행됩니다.</p><div class="price-list"><div class="price-row"><span>90분</span><b>120,000원</b></div><div class="price-row"><span>120분</span><b>150,000원</b></div><div class="price-row"><span>150분</span><b>180,000원</b></div></div></article>
         </div>"""
 
-# 1. 서울 메인 페이지
+# 1. 서울 메인 페이지 (canonical_url 사전 정의 완료 및 40/80자 규격 맞춤)
 def make_main_page(sitemap_list):
     nearby = []
     for d_slug, d_obj in RAW_DATA["seoul"]["districts"].items():
         nearby.append(f'          <a class="region-link" href="/areas/seoul/{d_slug}/"><b>서울 {d_obj["name"]}</b><span>빠른 방문 안내</span></a>')
     nearby_html = "\n".join(nearby)
 
-    title_text = f"서울 출장 프라이빗 케어 마사지 | 코스 요금표 - {BRAND_NAME}"
-    desc_text = f"서울출장마사지 전문 {BRAND_NAME}. 서울 전지역 방문 홈타이·스웨디시 1:1 맞춤 관리와 투명한 코스 요금표, 선입금 없는 100% 현장 후불제 직통 안내."
     canonical_url = f"{BASE_URL}/"
     sitemap_list.append(canonical_url)
+
+    # 40자 이내(29자) / 80자 이내(73자)
+    title_text = f"서울 출장 프라이빗 힐링케어 마사지 - {BRAND_NAME}"
+    desc_text = f"서울출장마사지 전문 {BRAND_NAME}. 서울 전지역 방문 홈타이·스웨디시 1:1 맞춤 코스 요금표 안내와 선입금 없는 100% 현장 후불제."
 
     sp1, sp2, sp3 = generate_gyeolro_story("서울", "서울특별시 전지역")
 
@@ -315,7 +311,6 @@ def make_main_page(sitemap_list):
         <h1>결과로 증명하는 품격 있는 휴식<br><em>결로테라피가 당신의 공간을 찾아갑니다</em></h1>
         <p>희망 장소(시·구·동)와 시간, 집중 코스를 알려주시면 당일 최적의 이동 동선으로 빠르게 찾아갑니다.</p>
         
-        <!-- 메인 배너 이미지 영역 (루트 폴더에 banner.jpg 파일을 넣어주세요) -->
         <div class="hero-banner-container">
           <img src="/banner.jpg" alt="결로테라피 프리미엄 출장 케어 배너" onerror="this.style.display='none'">
         </div>
@@ -458,7 +453,7 @@ def make_hub_page(prov_key, sitemap_list):
         nearby.append(f'          <a class="region-link" href="/areas/{prov_key}/{d_slug}/"><b>{d_obj["name"]}</b><span>빠른 방문 안내</span></a>')
     nearby_html = "\n".join(nearby)
 
-    title_text = f"{prov_short} 출장 프라이빗 케어 마사지 | 코스 요금표 - {BRAND_NAME}"
+    title_text = f"{prov_short} 출장 프라이빗 힐링케어 마사지 - {BRAND_NAME}"
     target_kw = f"{prov_short}출장마사지"
     desc_text = f"{target_kw} 전문 {BRAND_NAME}. {prov_full} 전지역 시·군·구 및 세부 동별 빠른 방문 배정, 선입금 없는 100% 현장 후불제 직통 안내."
 
@@ -603,12 +598,11 @@ def make_hub_page(prov_key, sitemap_list):
     with open(os.path.join(prov_key, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
-# 3. 시·구·군 단위 및 세부 '동·읍·면' 단위 페이지 자동 생성
+# 3. 시·구·군 단위 및 세부 '동·읍·면' 단위 페이지 자동 생성 (40자/80자 완벽 충족)
 def make_area_and_dong_pages(sitemap_list):
     district_count = 0
     dong_count = 0
     theme_idx = 0
-    sub_idx = 0
 
     for prov_key, p_obj in RAW_DATA.items():
         prov_full, prov_short, prov_hub_url = PROV_INFO[prov_key]
@@ -629,13 +623,12 @@ def make_area_and_dong_pages(sitemap_list):
             dong_links_html = "\n".join(dong_links)
 
             cur_theme = TITLE_THEMES[theme_idx % len(TITLE_THEMES)]
-            cur_sub = SUB_TITLES[sub_idx % len(SUB_TITLES)]
             theme_idx += 1
-            sub_idx += 1
 
             short_d = re.sub(r'(구|시|군)$', '', d_name) if len(d_name) > 2 else d_name
 
-            dist_title = f"{short_d} {cur_theme} | {cur_sub} - {BRAND_NAME}"
+            # 구 단위: 40자 이내 / 80자 이내
+            dist_title = f"{short_d} {cur_theme} - {BRAND_NAME}"
             dist_desc = f"{d_name}출장마사지 전문 {BRAND_NAME}. {prov_short} {d_name} 전지역 및 세부 동별 빠른 방문 배정과 선입금 없는 100% 현장 후불제 직통 안내."
 
             dsp1, dsp2, dsp3 = generate_gyeolro_story(prov_short, d_name)
@@ -824,7 +817,7 @@ def make_area_and_dong_pages(sitemap_list):
                 f.write(dist_html)
             district_count += 1
 
-            # (2) 동·읍·면 페이지 생성
+            # (2) 동·읍·면 페이지 생성: '마사지' 키워드 적용 및 40자(20자 내외)/80자(70자 내외) 규격 충족
             for dong_name in dongs:
                 dong_slug = make_slug(dong_name)
                 dong_dir = os.path.join(dist_dir, dong_slug)
@@ -833,12 +826,11 @@ def make_area_and_dong_pages(sitemap_list):
                 sitemap_list.append(dong_canonical)
 
                 dong_theme = TITLE_THEMES[theme_idx % len(TITLE_THEMES)]
-                dong_sub = SUB_TITLES[sub_idx % len(SUB_TITLES)]
                 theme_idx += 1
-                sub_idx += 1
 
-                dong_title = f"{dong_name} {dong_theme} | {dong_sub} - {BRAND_NAME}"
-                dong_desc = f"{dong_name}출장마사지 안내 {BRAND_NAME}. {d_name} {dong_name} 방문 타이·아로마·스웨디시 코스 안내와 선입금 없는 100% 현장 후불제 직통 예약."
+                # 철산동 기준 제목 21자 / 설명문 68자
+                dong_title = f"{dong_name} {dong_theme} - {BRAND_NAME}"
+                dong_desc = f"{dong_name}출장마사지 {BRAND_NAME}. {d_name} {dong_name} 방문 타이·아로마·스웨디시 코스와 선입금 없는 100% 현장 후불제."
 
                 dong_sp1, dong_sp2, dong_sp3 = generate_gyeolro_story(prov_short, d_name, dong_name)
 
